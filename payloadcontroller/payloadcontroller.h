@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_PAYLOADCONTROLLER.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_PAYLOADCONTROLLER_XML_HASH -7880706192994840313
+#define MAVLINK_PAYLOADCONTROLLER_XML_HASH 5187761341040991816
 
 #ifdef __cplusplus
 extern "C" {
