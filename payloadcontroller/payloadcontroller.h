@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_PAYLOADCONTROLLER.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_PAYLOADCONTROLLER_XML_HASH -2186447679486857912
+#define MAVLINK_PAYLOADCONTROLLER_XML_HASH -7880706192994840313
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{9500, 38, 248, 248, 0, 0, 0}, {9501, 147, 248, 248, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{9500, 136, 252, 252, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -33,6 +33,16 @@ extern "C" {
 // ENUM DEFINITIONS
 
 
+/** @brief  */
+#ifndef HAVE_ENUM_MESSAGE_TYPE
+#define HAVE_ENUM_MESSAGE_TYPE
+typedef enum MESSAGE_TYPE
+{
+   PAYLOAD_CONTROLLER_API_REQUEST=0, /*  | */
+   PAYLOAD_CONTROLLER_API_RESPONSE=1, /*  | */
+   MESSAGE_TYPE_ENUM_END=2, /*  | */
+} MESSAGE_TYPE;
+#endif
 
 // MAVLINK VERSION
 
@@ -46,16 +56,15 @@ extern "C" {
 #endif
 
 // MESSAGE DEFINITIONS
-#include "./mavlink_msg_payload_controller_request_message.h"
-#include "./mavlink_msg_payload_controller_response_message.h"
+#include "./mavlink_msg_payload_controller_api_message.h"
 
 // base include
 
 
 
 #if MAVLINK_PAYLOADCONTROLLER_XML_HASH == MAVLINK_PRIMARY_XML_HASH
-# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_REQUEST_MESSAGE, MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_RESPONSE_MESSAGE}
-# define MAVLINK_MESSAGE_NAMES {{ "PAYLOAD_CONTROLLER_REQUEST_MESSAGE", 9500 }, { "PAYLOAD_CONTROLLER_RESPONSE_MESSAGE", 9501 }}
+# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_API_MESSAGE}
+# define MAVLINK_MESSAGE_NAMES {{ "PAYLOAD_CONTROLLER_API_MESSAGE", 9500 }}
 # if MAVLINK_COMMAND_24BIT
 #  include "../mavlink_get_info.h"
 # endif
