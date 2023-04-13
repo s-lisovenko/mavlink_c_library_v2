@@ -1,16 +1,16 @@
 /** @file
- *  @brief MAVLink comm protocol generated from payloadcontroller.xml
+ *  @brief MAVLink comm protocol generated from payload_controller.xml
  *  @see http://mavlink.org
  */
 #pragma once
-#ifndef MAVLINK_PAYLOADCONTROLLER_H
-#define MAVLINK_PAYLOADCONTROLLER_H
+#ifndef MAVLINK_PAYLOAD_CONTROLLER_H
+#define MAVLINK_PAYLOAD_CONTROLLER_H
 
 #ifndef MAVLINK_H
-    #error Wrong include order: MAVLINK_PAYLOADCONTROLLER.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
+    #error Wrong include order: MAVLINK_PAYLOAD_CONTROLLER.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_PAYLOADCONTROLLER_XML_HASH -8758710044623562783
+#define MAVLINK_PAYLOAD_CONTROLLER_XML_HASH 7819391031070166575
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +28,7 @@ extern "C" {
 
 #include "../protocol.h"
 
-#define MAVLINK_ENABLED_PAYLOADCONTROLLER
+#define MAVLINK_ENABLED_PAYLOAD_CONTROLLER
 
 // ENUM DEFINITIONS
 
@@ -62,7 +62,7 @@ typedef enum MESSAGE_TYPE
 
 
 
-#if MAVLINK_PAYLOADCONTROLLER_XML_HASH == MAVLINK_PRIMARY_XML_HASH
+#if MAVLINK_PAYLOAD_CONTROLLER_XML_HASH == MAVLINK_PRIMARY_XML_HASH
 # define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_API_MESSAGE}
 # define MAVLINK_MESSAGE_NAMES {{ "PAYLOAD_CONTROLLER_API_MESSAGE", 9500 }}
 # if MAVLINK_COMMAND_24BIT
@@ -73,4 +73,4 @@ typedef enum MESSAGE_TYPE
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // MAVLINK_PAYLOADCONTROLLER_H
+#endif // MAVLINK_PAYLOAD_CONTROLLER_H

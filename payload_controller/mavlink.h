@@ -1,12 +1,12 @@
 /** @file
- *  @brief MAVLink comm protocol built from payloadcontroller.xml
+ *  @brief MAVLink comm protocol built from payload_controller.xml
  *  @see http://mavlink.org
  */
 #pragma once
 #ifndef MAVLINK_H
 #define MAVLINK_H
 
-#define MAVLINK_PRIMARY_XML_HASH -8758710044623562783
+#define MAVLINK_PRIMARY_XML_HASH 7819391031070166575
 
 #ifndef MAVLINK_STX
 #define MAVLINK_STX 253
@@ -29,6 +29,6 @@
 #endif
 
 #include "version.h"
-#include "payloadcontroller.h"
+#include "payload_controller.h"
 
 #endif // MAVLINK_H
