@@ -5,35 +5,32 @@
 
 
 typedef struct __mavlink_payload_controller_api_message_t {
- uint8_t messageType; /*<  Message type*/
- char message[250]; /*<  Json message between payload controller and QGC.*/
+ char message[252]; /*<  Json message between payload controller and QGC.*/
 } mavlink_payload_controller_api_message_t;
 
-#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN 251
-#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN 251
-#define MAVLINK_MSG_ID_9500_LEN 251
-#define MAVLINK_MSG_ID_9500_MIN_LEN 251
+#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN 252
+#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN 252
+#define MAVLINK_MSG_ID_9500_LEN 252
+#define MAVLINK_MSG_ID_9500_MIN_LEN 252
 
-#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC 193
-#define MAVLINK_MSG_ID_9500_CRC 193
+#define MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC 85
+#define MAVLINK_MSG_ID_9500_CRC 85
 
-#define MAVLINK_MSG_PAYLOAD_CONTROLLER_API_MESSAGE_FIELD_MESSAGE_LEN 250
+#define MAVLINK_MSG_PAYLOAD_CONTROLLER_API_MESSAGE_FIELD_MESSAGE_LEN 252
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_API_MESSAGE { \
     9500, \
     "PAYLOAD_CONTROLLER_API_MESSAGE", \
-    2, \
-    {  { "messageType", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_payload_controller_api_message_t, messageType) }, \
-         { "message", NULL, MAVLINK_TYPE_CHAR, 250, 1, offsetof(mavlink_payload_controller_api_message_t, message) }, \
+    1, \
+    {  { "message", NULL, MAVLINK_TYPE_CHAR, 252, 0, offsetof(mavlink_payload_controller_api_message_t, message) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_PAYLOAD_CONTROLLER_API_MESSAGE { \
     "PAYLOAD_CONTROLLER_API_MESSAGE", \
-    2, \
-    {  { "messageType", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_payload_controller_api_message_t, messageType) }, \
-         { "message", NULL, MAVLINK_TYPE_CHAR, 250, 1, offsetof(mavlink_payload_controller_api_message_t, message) }, \
+    1, \
+    {  { "message", NULL, MAVLINK_TYPE_CHAR, 252, 0, offsetof(mavlink_payload_controller_api_message_t, message) }, \
          } \
 }
 #endif
@@ -44,22 +41,21 @@ typedef struct __mavlink_payload_controller_api_message_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param messageType  Message type
  * @param message  Json message between payload controller and QGC.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_payload_controller_api_message_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t messageType, const char *message)
+                               const char *message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN];
-    _mav_put_uint8_t(buf, 0, messageType);
-    _mav_put_char_array(buf, 1, message, 250);
+
+    _mav_put_char_array(buf, 0, message, 252);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN);
 #else
     mavlink_payload_controller_api_message_t packet;
-    packet.messageType = messageType;
-    mav_array_memcpy(packet.message, message, sizeof(char)*250);
+
+    mav_array_memcpy(packet.message, message, sizeof(char)*252);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN);
 #endif
 
@@ -73,23 +69,22 @@ static inline uint16_t mavlink_msg_payload_controller_api_message_pack(uint8_t s
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param messageType  Message type
  * @param message  Json message between payload controller and QGC.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_payload_controller_api_message_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t messageType,const char *message)
+                                   const char *message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN];
-    _mav_put_uint8_t(buf, 0, messageType);
-    _mav_put_char_array(buf, 1, message, 250);
+
+    _mav_put_char_array(buf, 0, message, 252);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN);
 #else
     mavlink_payload_controller_api_message_t packet;
-    packet.messageType = messageType;
-    mav_array_memcpy(packet.message, message, sizeof(char)*250);
+
+    mav_array_memcpy(packet.message, message, sizeof(char)*252);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN);
 #endif
 
@@ -107,7 +102,7 @@ static inline uint16_t mavlink_msg_payload_controller_api_message_pack_chan(uint
  */
 static inline uint16_t mavlink_msg_payload_controller_api_message_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_payload_controller_api_message_t* payload_controller_api_message)
 {
-    return mavlink_msg_payload_controller_api_message_pack(system_id, component_id, msg, payload_controller_api_message->messageType, payload_controller_api_message->message);
+    return mavlink_msg_payload_controller_api_message_pack(system_id, component_id, msg, payload_controller_api_message->message);
 }
 
 /**
@@ -121,29 +116,28 @@ static inline uint16_t mavlink_msg_payload_controller_api_message_encode(uint8_t
  */
 static inline uint16_t mavlink_msg_payload_controller_api_message_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_payload_controller_api_message_t* payload_controller_api_message)
 {
-    return mavlink_msg_payload_controller_api_message_pack_chan(system_id, component_id, chan, msg, payload_controller_api_message->messageType, payload_controller_api_message->message);
+    return mavlink_msg_payload_controller_api_message_pack_chan(system_id, component_id, chan, msg, payload_controller_api_message->message);
 }
 
 /**
  * @brief Send a payload_controller_api_message message
  * @param chan MAVLink channel to send the message
  *
- * @param messageType  Message type
  * @param message  Json message between payload controller and QGC.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_payload_controller_api_message_send(mavlink_channel_t chan, uint8_t messageType, const char *message)
+static inline void mavlink_msg_payload_controller_api_message_send(mavlink_channel_t chan, const char *message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN];
-    _mav_put_uint8_t(buf, 0, messageType);
-    _mav_put_char_array(buf, 1, message, 250);
+
+    _mav_put_char_array(buf, 0, message, 252);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE, buf, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC);
 #else
     mavlink_payload_controller_api_message_t packet;
-    packet.messageType = messageType;
-    mav_array_memcpy(packet.message, message, sizeof(char)*250);
+
+    mav_array_memcpy(packet.message, message, sizeof(char)*252);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE, (const char *)&packet, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC);
 #endif
 }
@@ -156,7 +150,7 @@ static inline void mavlink_msg_payload_controller_api_message_send(mavlink_chann
 static inline void mavlink_msg_payload_controller_api_message_send_struct(mavlink_channel_t chan, const mavlink_payload_controller_api_message_t* payload_controller_api_message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_payload_controller_api_message_send(chan, payload_controller_api_message->messageType, payload_controller_api_message->message);
+    mavlink_msg_payload_controller_api_message_send(chan, payload_controller_api_message->message);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE, (const char *)payload_controller_api_message, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC);
 #endif
@@ -170,17 +164,17 @@ static inline void mavlink_msg_payload_controller_api_message_send_struct(mavlin
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_payload_controller_api_message_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t messageType, const char *message)
+static inline void mavlink_msg_payload_controller_api_message_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  const char *message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, messageType);
-    _mav_put_char_array(buf, 1, message, 250);
+
+    _mav_put_char_array(buf, 0, message, 252);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE, buf, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC);
 #else
     mavlink_payload_controller_api_message_t *packet = (mavlink_payload_controller_api_message_t *)msgbuf;
-    packet->messageType = messageType;
-    mav_array_memcpy(packet->message, message, sizeof(char)*250);
+
+    mav_array_memcpy(packet->message, message, sizeof(char)*252);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE, (const char *)packet, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_MIN_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN, MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_CRC);
 #endif
 }
@@ -192,23 +186,13 @@ static inline void mavlink_msg_payload_controller_api_message_send_buf(mavlink_m
 
 
 /**
- * @brief Get field messageType from payload_controller_api_message message
- *
- * @return  Message type
- */
-static inline uint8_t mavlink_msg_payload_controller_api_message_get_messageType(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_uint8_t(msg,  0);
-}
-
-/**
  * @brief Get field message from payload_controller_api_message message
  *
  * @return  Json message between payload controller and QGC.
  */
 static inline uint16_t mavlink_msg_payload_controller_api_message_get_message(const mavlink_message_t* msg, char *message)
 {
-    return _MAV_RETURN_char_array(msg, message, 250,  1);
+    return _MAV_RETURN_char_array(msg, message, 252,  0);
 }
 
 /**
@@ -220,7 +204,6 @@ static inline uint16_t mavlink_msg_payload_controller_api_message_get_message(co
 static inline void mavlink_msg_payload_controller_api_message_decode(const mavlink_message_t* msg, mavlink_payload_controller_api_message_t* payload_controller_api_message)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    payload_controller_api_message->messageType = mavlink_msg_payload_controller_api_message_get_messageType(msg);
     mavlink_msg_payload_controller_api_message_get_message(msg, payload_controller_api_message->message);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN? msg->len : MAVLINK_MSG_ID_PAYLOAD_CONTROLLER_API_MESSAGE_LEN;

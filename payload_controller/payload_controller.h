@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_PAYLOAD_CONTROLLER.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_PAYLOAD_CONTROLLER_XML_HASH 7819391031070166575
+#define MAVLINK_PAYLOAD_CONTROLLER_XML_HASH 8423059029835108496
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{9500, 193, 251, 251, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{9500, 85, 252, 252, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -33,16 +33,6 @@ extern "C" {
 // ENUM DEFINITIONS
 
 
-/** @brief  */
-#ifndef HAVE_ENUM_MESSAGE_TYPE
-#define HAVE_ENUM_MESSAGE_TYPE
-typedef enum MESSAGE_TYPE
-{
-   PAYLOAD_CONTROLLER_API_REQUEST=0, /*  | */
-   PAYLOAD_CONTROLLER_API_RESPONSE=1, /*  | */
-   MESSAGE_TYPE_ENUM_END=2, /*  | */
-} MESSAGE_TYPE;
-#endif
 
 // MAVLINK VERSION
 

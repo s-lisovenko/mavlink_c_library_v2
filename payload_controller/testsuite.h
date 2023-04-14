@@ -37,13 +37,12 @@ static void mavlink_test_payload_controller_api_message(uint8_t system_id, uint8
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_payload_controller_api_message_t packet_in = {
-        5,"BCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQ"
     };
     mavlink_payload_controller_api_message_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
-        packet1.messageType = packet_in.messageType;
         
-        mav_array_memcpy(packet1.message, packet_in.message, sizeof(char)*250);
+        mav_array_memcpy(packet1.message, packet_in.message, sizeof(char)*252);
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
         if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
@@ -57,12 +56,12 @@ static void mavlink_test_payload_controller_api_message(uint8_t system_id, uint8
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_payload_controller_api_message_pack(system_id, component_id, &msg , packet1.messageType , packet1.message );
+    mavlink_msg_payload_controller_api_message_pack(system_id, component_id, &msg , packet1.message );
     mavlink_msg_payload_controller_api_message_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_payload_controller_api_message_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.messageType , packet1.message );
+    mavlink_msg_payload_controller_api_message_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.message );
     mavlink_msg_payload_controller_api_message_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -75,7 +74,7 @@ static void mavlink_test_payload_controller_api_message(uint8_t system_id, uint8
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_payload_controller_api_message_send(MAVLINK_COMM_1 , packet1.messageType , packet1.message );
+    mavlink_msg_payload_controller_api_message_send(MAVLINK_COMM_1 , packet1.message );
     mavlink_msg_payload_controller_api_message_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
