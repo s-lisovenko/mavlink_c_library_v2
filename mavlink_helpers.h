@@ -368,12 +368,14 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	ck[0] = (uint8_t)(checksum & 0xFF);
 	ck[1] = (uint8_t)(checksum >> 8);
 
+#ifndef MAVLINK_NO_SIGN_PACKET
 	if (signing) {
 		// possibly add a signature
 		signature_len = mavlink_sign_packet(status->signing, signature, buf, header_len+1,
 						    (const uint8_t *)packet, length, ck);
 	}
-	
+#endif
+
 	MAVLINK_START_UART_SEND(chan, header_len + 3 + (uint16_t)length + (uint16_t)signature_len);
 	_mavlink_send_uart(chan, (const char *)buf, header_len+1);
 	_mavlink_send_uart(chan, packet, length);
@@ -626,7 +628,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		{
 			status->buffer_overrun++;
 			_mav_parse_error(status);
-			status->msg_received = 0;
+			status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 		}
 		else
@@ -650,7 +652,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		if ((rxmsg->incompat_flags & ~MAVLINK_IFLAG_MASK) != 0) {
 			// message includes an incompatible feature flag
 			_mav_parse_error(status);
-			status->msg_received = 0;
+			status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 			break;
 		}
@@ -705,7 +707,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_MSGID1:
-		rxmsg->msgid |= c<<8;
+		rxmsg->msgid |= ((uint32_t)c)<<8;
 		mavlink_update_checksum(rxmsg, c);
 		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
 		break;
@@ -740,18 +742,24 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 
 	case MAVLINK_PARSE_STATE_GOT_PAYLOAD: {
 		const mavlink_msg_entry_t *e = mavlink_get_msg_entry(rxmsg->msgid);
-		uint8_t crc_extra = e?e->crc_extra:0;
-		mavlink_update_checksum(rxmsg, crc_extra);
-		if (c != (rxmsg->checksum & 0xFF)) {
+		if (e == NULL) {
+			// Message not found in CRC_EXTRA table.
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
+			rxmsg->ck[0] = c;
 		} else {
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_CRC1;
-		}
-                rxmsg->ck[0] = c;
+			uint8_t crc_extra = e->crc_extra;
+			mavlink_update_checksum(rxmsg, crc_extra);
+			if (c != (rxmsg->checksum & 0xFF)) {
+				status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
+			} else {
+				status->parse_state = MAVLINK_PARSE_STATE_GOT_CRC1;
+			}
+			rxmsg->ck[0] = c;
 
-		// zero-fill the packet to cope with short incoming packets
-                if (e && status->packet_idx < e->max_msg_len) {
-                        memset(&_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx], 0, e->max_msg_len - status->packet_idx);
+			// zero-fill the packet to cope with short incoming packets
+				if (e && status->packet_idx < e->max_msg_len) {
+					memset(&_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx], 0, e->max_msg_len - status->packet_idx);
+			}
 		}
 		break;
         }
@@ -768,14 +776,15 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		rxmsg->ck[1] = c;
 
 		if (rxmsg->incompat_flags & MAVLINK_IFLAG_SIGNED) {
-			status->parse_state = MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
-			status->signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
-
-			// If the CRC is already wrong, don't overwrite msg_received,
-			// otherwise we can end up with garbage flagged as valid.
-			if (status->msg_received != MAVLINK_FRAMING_BAD_CRC) {
-				status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
+			if (status->msg_received == MAVLINK_FRAMING_BAD_CRC) {
+			    // If the CRC is already wrong, don't overwrite msg_received,
+			    // otherwise we can end up with garbage flagged as valid.
+			    status->parse_state = MAVLINK_PARSE_STATE_SIGNATURE_WAIT_BAD_CRC;
+			} else {
+			    status->parse_state = MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
+			    status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
 			}
+			status->signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 		} else {
 			if (status->signing &&
 			   	(status->signing->accept_unsigned_callback == NULL ||
@@ -793,6 +802,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		}
 		break;
 	case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
+	case MAVLINK_PARSE_STATE_SIGNATURE_WAIT_BAD_CRC:
 		rxmsg->signature[MAVLINK_SIGNATURE_BLOCK_LEN-status->signature_wait] = c;
 		status->signature_wait--;
 		if (status->signature_wait == 0) {
@@ -808,10 +818,12 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 				// accepted via application level override
 				sig_ok = true;
 			}
-			if (sig_ok) {
-				status->msg_received = MAVLINK_FRAMING_OK;
+			if (status->parse_state == MAVLINK_PARSE_STATE_SIGNATURE_WAIT_BAD_CRC) {
+			    status->msg_received = MAVLINK_FRAMING_BAD_CRC;
+			} else if (sig_ok) {
+			    status->msg_received = MAVLINK_FRAMING_OK;
 			} else {
-				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
+			    status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
 			}
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 			if (r_message !=NULL) {

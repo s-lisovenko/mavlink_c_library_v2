@@ -125,6 +125,69 @@ static inline uint16_t mavlink_msg_target_absolute_pack(uint8_t system_id, uint8
     packet.alt = alt;
     packet.id = id;
     packet.sensor_capabilities = sensor_capabilities;
+    mav_array_assign_float(packet.vel, vel, 3);
+    mav_array_assign_float(packet.acc, acc, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.rates, rates, 3);
+    mav_array_assign_float(packet.position_std, position_std, 2);
+    mav_array_assign_float(packet.vel_std, vel_std, 3);
+    mav_array_assign_float(packet.acc_std, acc_std, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_TARGET_ABSOLUTE;
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_CRC);
+}
+
+/**
+ * @brief Pack a target_absolute message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param timestamp [us] Timestamp (UNIX epoch time).
+ * @param id  The ID of the target if multiple targets are present
+ * @param sensor_capabilities  Bitmap to indicate the sensor's reporting capabilities
+ * @param lat [degE7] Target's latitude (WGS84)
+ * @param lon [degE7] Target's longitude (WGS84)
+ * @param alt [m] Target's altitude (AMSL)
+ * @param vel [m/s] Target's velocity in its body frame
+ * @param acc [m/s/s] Linear target's acceleration in its body frame
+ * @param q_target  Quaternion of the target's orientation from its body frame to the vehicle's NED frame.
+ * @param rates [rad/s] Target's roll, pitch and yaw rates
+ * @param position_std [m] Standard deviation of horizontal (eph) and vertical (epv) position errors
+ * @param vel_std [m/s] Standard deviation of the target's velocity in its body frame
+ * @param acc_std [m/s/s] Standard deviation of the target's acceleration in its body frame
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_target_absolute_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               uint64_t timestamp, uint8_t id, uint8_t sensor_capabilities, int32_t lat, int32_t lon, float alt, const float *vel, const float *acc, const float *q_target, const float *rates, const float *position_std, const float *vel_std, const float *acc_std)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN];
+    _mav_put_uint64_t(buf, 0, timestamp);
+    _mav_put_int32_t(buf, 8, lat);
+    _mav_put_int32_t(buf, 12, lon);
+    _mav_put_float(buf, 16, alt);
+    _mav_put_uint8_t(buf, 104, id);
+    _mav_put_uint8_t(buf, 105, sensor_capabilities);
+    _mav_put_float_array(buf, 20, vel, 3);
+    _mav_put_float_array(buf, 32, acc, 3);
+    _mav_put_float_array(buf, 44, q_target, 4);
+    _mav_put_float_array(buf, 60, rates, 3);
+    _mav_put_float_array(buf, 72, position_std, 2);
+    _mav_put_float_array(buf, 80, vel_std, 3);
+    _mav_put_float_array(buf, 92, acc_std, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN);
+#else
+    mavlink_target_absolute_t packet;
+    packet.timestamp = timestamp;
+    packet.lat = lat;
+    packet.lon = lon;
+    packet.alt = alt;
+    packet.id = id;
+    packet.sensor_capabilities = sensor_capabilities;
     mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
@@ -136,7 +199,11 @@ static inline uint16_t mavlink_msg_target_absolute_pack(uint8_t system_id, uint8
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_TARGET_ABSOLUTE;
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_CRC);
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN);
+#endif
 }
 
 /**
@@ -188,13 +255,13 @@ static inline uint16_t mavlink_msg_target_absolute_pack_chan(uint8_t system_id, 
     packet.alt = alt;
     packet.id = id;
     packet.sensor_capabilities = sensor_capabilities;
-    mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
-    mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
-    mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet.rates, rates, sizeof(float)*3);
-    mav_array_memcpy(packet.position_std, position_std, sizeof(float)*2);
-    mav_array_memcpy(packet.vel_std, vel_std, sizeof(float)*3);
-    mav_array_memcpy(packet.acc_std, acc_std, sizeof(float)*3);
+    mav_array_assign_float(packet.vel, vel, 3);
+    mav_array_assign_float(packet.acc, acc, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.rates, rates, 3);
+    mav_array_assign_float(packet.position_std, position_std, 2);
+    mav_array_assign_float(packet.vel_std, vel_std, 3);
+    mav_array_assign_float(packet.acc_std, acc_std, 3);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN);
 #endif
 
@@ -227,6 +294,20 @@ static inline uint16_t mavlink_msg_target_absolute_encode(uint8_t system_id, uin
 static inline uint16_t mavlink_msg_target_absolute_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_target_absolute_t* target_absolute)
 {
     return mavlink_msg_target_absolute_pack_chan(system_id, component_id, chan, msg, target_absolute->timestamp, target_absolute->id, target_absolute->sensor_capabilities, target_absolute->lat, target_absolute->lon, target_absolute->alt, target_absolute->vel, target_absolute->acc, target_absolute->q_target, target_absolute->rates, target_absolute->position_std, target_absolute->vel_std, target_absolute->acc_std);
+}
+
+/**
+ * @brief Encode a target_absolute struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param target_absolute C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_target_absolute_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_target_absolute_t* target_absolute)
+{
+    return mavlink_msg_target_absolute_pack_status(system_id, component_id, _status, msg,  target_absolute->timestamp, target_absolute->id, target_absolute->sensor_capabilities, target_absolute->lat, target_absolute->lon, target_absolute->alt, target_absolute->vel, target_absolute->acc, target_absolute->q_target, target_absolute->rates, target_absolute->position_std, target_absolute->vel_std, target_absolute->acc_std);
 }
 
 /**
@@ -275,13 +356,13 @@ static inline void mavlink_msg_target_absolute_send(mavlink_channel_t chan, uint
     packet.alt = alt;
     packet.id = id;
     packet.sensor_capabilities = sensor_capabilities;
-    mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
-    mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
-    mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet.rates, rates, sizeof(float)*3);
-    mav_array_memcpy(packet.position_std, position_std, sizeof(float)*2);
-    mav_array_memcpy(packet.vel_std, vel_std, sizeof(float)*3);
-    mav_array_memcpy(packet.acc_std, acc_std, sizeof(float)*3);
+    mav_array_assign_float(packet.vel, vel, 3);
+    mav_array_assign_float(packet.acc, acc, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.rates, rates, 3);
+    mav_array_assign_float(packet.position_std, position_std, 2);
+    mav_array_assign_float(packet.vel_std, vel_std, 3);
+    mav_array_assign_float(packet.acc_std, acc_std, 3);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TARGET_ABSOLUTE, (const char *)&packet, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_CRC);
 #endif
 }
@@ -302,7 +383,7 @@ static inline void mavlink_msg_target_absolute_send_struct(mavlink_channel_t cha
 
 #if MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -334,13 +415,13 @@ static inline void mavlink_msg_target_absolute_send_buf(mavlink_message_t *msgbu
     packet->alt = alt;
     packet->id = id;
     packet->sensor_capabilities = sensor_capabilities;
-    mav_array_memcpy(packet->vel, vel, sizeof(float)*3);
-    mav_array_memcpy(packet->acc, acc, sizeof(float)*3);
-    mav_array_memcpy(packet->q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet->rates, rates, sizeof(float)*3);
-    mav_array_memcpy(packet->position_std, position_std, sizeof(float)*2);
-    mav_array_memcpy(packet->vel_std, vel_std, sizeof(float)*3);
-    mav_array_memcpy(packet->acc_std, acc_std, sizeof(float)*3);
+    mav_array_assign_float(packet->vel, vel, 3);
+    mav_array_assign_float(packet->acc, acc, 3);
+    mav_array_assign_float(packet->q_target, q_target, 4);
+    mav_array_assign_float(packet->rates, rates, 3);
+    mav_array_assign_float(packet->position_std, position_std, 2);
+    mav_array_assign_float(packet->vel_std, vel_std, 3);
+    mav_array_assign_float(packet->acc_std, acc_std, 3);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TARGET_ABSOLUTE, (const char *)packet, MAVLINK_MSG_ID_TARGET_ABSOLUTE_MIN_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_LEN, MAVLINK_MSG_ID_TARGET_ABSOLUTE_CRC);
 #endif
 }

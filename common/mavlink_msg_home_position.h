@@ -121,12 +121,77 @@ static inline uint16_t mavlink_msg_home_position_pack(uint8_t system_id, uint8_t
     packet.approach_y = approach_y;
     packet.approach_z = approach_z;
     packet.time_usec = time_usec;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
+    mav_array_assign_float(packet.q, q, 4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_HOME_POSITION_LEN);
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_HOME_POSITION;
     return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_HOME_POSITION_MIN_LEN, MAVLINK_MSG_ID_HOME_POSITION_LEN, MAVLINK_MSG_ID_HOME_POSITION_CRC);
+}
+
+/**
+ * @brief Pack a home_position message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param latitude [degE7] Latitude (WGS84)
+ * @param longitude [degE7] Longitude (WGS84)
+ * @param altitude [mm] Altitude (MSL). Positive for up.
+ * @param x [m] Local X position of this position in the local coordinate frame (NED)
+ * @param y [m] Local Y position of this position in the local coordinate frame (NED)
+ * @param z [m] Local Z position of this position in the local coordinate frame (NED: positive "down")
+ * @param q  
+        Quaternion indicating world-to-surface-normal and heading transformation of the takeoff position.
+        Used to indicate the heading and slope of the ground.
+        All fields should be set to NaN if an accurate quaternion for both heading and surface slope cannot be supplied.
+      
+ * @param approach_x [m] Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.
+ * @param approach_y [m] Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.
+ * @param approach_z [m] Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_home_position_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               int32_t latitude, int32_t longitude, int32_t altitude, float x, float y, float z, const float *q, float approach_x, float approach_y, float approach_z, uint64_t time_usec)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_HOME_POSITION_LEN];
+    _mav_put_int32_t(buf, 0, latitude);
+    _mav_put_int32_t(buf, 4, longitude);
+    _mav_put_int32_t(buf, 8, altitude);
+    _mav_put_float(buf, 12, x);
+    _mav_put_float(buf, 16, y);
+    _mav_put_float(buf, 20, z);
+    _mav_put_float(buf, 40, approach_x);
+    _mav_put_float(buf, 44, approach_y);
+    _mav_put_float(buf, 48, approach_z);
+    _mav_put_uint64_t(buf, 52, time_usec);
+    _mav_put_float_array(buf, 24, q, 4);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_HOME_POSITION_LEN);
+#else
+    mavlink_home_position_t packet;
+    packet.latitude = latitude;
+    packet.longitude = longitude;
+    packet.altitude = altitude;
+    packet.x = x;
+    packet.y = y;
+    packet.z = z;
+    packet.approach_x = approach_x;
+    packet.approach_y = approach_y;
+    packet.approach_z = approach_z;
+    packet.time_usec = time_usec;
+    mav_array_memcpy(packet.q, q, sizeof(float)*4);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_HOME_POSITION_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_HOME_POSITION;
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_HOME_POSITION_MIN_LEN, MAVLINK_MSG_ID_HOME_POSITION_LEN, MAVLINK_MSG_ID_HOME_POSITION_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_HOME_POSITION_MIN_LEN, MAVLINK_MSG_ID_HOME_POSITION_LEN);
+#endif
 }
 
 /**
@@ -182,7 +247,7 @@ static inline uint16_t mavlink_msg_home_position_pack_chan(uint8_t system_id, ui
     packet.approach_y = approach_y;
     packet.approach_z = approach_z;
     packet.time_usec = time_usec;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
+    mav_array_assign_float(packet.q, q, 4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_HOME_POSITION_LEN);
 #endif
 
@@ -215,6 +280,20 @@ static inline uint16_t mavlink_msg_home_position_encode(uint8_t system_id, uint8
 static inline uint16_t mavlink_msg_home_position_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_home_position_t* home_position)
 {
     return mavlink_msg_home_position_pack_chan(system_id, component_id, chan, msg, home_position->latitude, home_position->longitude, home_position->altitude, home_position->x, home_position->y, home_position->z, home_position->q, home_position->approach_x, home_position->approach_y, home_position->approach_z, home_position->time_usec);
+}
+
+/**
+ * @brief Encode a home_position struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param home_position C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_home_position_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_home_position_t* home_position)
+{
+    return mavlink_msg_home_position_pack_status(system_id, component_id, _status, msg,  home_position->latitude, home_position->longitude, home_position->altitude, home_position->x, home_position->y, home_position->z, home_position->q, home_position->approach_x, home_position->approach_y, home_position->approach_z, home_position->time_usec);
 }
 
 /**
@@ -267,7 +346,7 @@ static inline void mavlink_msg_home_position_send(mavlink_channel_t chan, int32_
     packet.approach_y = approach_y;
     packet.approach_z = approach_z;
     packet.time_usec = time_usec;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
+    mav_array_assign_float(packet.q, q, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_HOME_POSITION, (const char *)&packet, MAVLINK_MSG_ID_HOME_POSITION_MIN_LEN, MAVLINK_MSG_ID_HOME_POSITION_LEN, MAVLINK_MSG_ID_HOME_POSITION_CRC);
 #endif
 }
@@ -288,7 +367,7 @@ static inline void mavlink_msg_home_position_send_struct(mavlink_channel_t chan,
 
 #if MAVLINK_MSG_ID_HOME_POSITION_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -322,7 +401,7 @@ static inline void mavlink_msg_home_position_send_buf(mavlink_message_t *msgbuf,
     packet->approach_y = approach_y;
     packet->approach_z = approach_z;
     packet->time_usec = time_usec;
-    mav_array_memcpy(packet->q, q, sizeof(float)*4);
+    mav_array_assign_float(packet->q, q, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_HOME_POSITION, (const char *)packet, MAVLINK_MSG_ID_HOME_POSITION_MIN_LEN, MAVLINK_MSG_ID_HOME_POSITION_LEN, MAVLINK_MSG_ID_HOME_POSITION_CRC);
 #endif
 }

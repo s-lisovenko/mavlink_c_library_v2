@@ -95,12 +95,64 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack(uint8_t system_id,
     packet.gpsOffsetLat = gpsOffsetLat;
     packet.gpsOffsetLon = gpsOffsetLon;
     packet.rfSelect = rfSelect;
-    mav_array_memcpy(packet.callsign, callsign, sizeof(char)*9);
+    mav_array_assign_char(packet.callsign, callsign, 9);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN);
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG;
     return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_CRC);
+}
+
+/**
+ * @brief Pack a uavionix_adsb_out_cfg message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param ICAO  Vehicle address (24 bit)
+ * @param callsign  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
+ * @param emitterType  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
+ * @param aircraftSize  Aircraft length and width encoding (table 2-35 of DO-282B)
+ * @param gpsOffsetLat  GPS antenna lateral offset (table 2-36 of DO-282B)
+ * @param gpsOffsetLon  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
+ * @param stallSpeed [cm/s] Aircraft stall speed in cm/s
+ * @param rfSelect  ADS-B transponder receiver and transmit enable flags
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               uint32_t ICAO, const char *callsign, uint8_t emitterType, uint8_t aircraftSize, uint8_t gpsOffsetLat, uint8_t gpsOffsetLon, uint16_t stallSpeed, uint8_t rfSelect)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN];
+    _mav_put_uint32_t(buf, 0, ICAO);
+    _mav_put_uint16_t(buf, 4, stallSpeed);
+    _mav_put_uint8_t(buf, 15, emitterType);
+    _mav_put_uint8_t(buf, 16, aircraftSize);
+    _mav_put_uint8_t(buf, 17, gpsOffsetLat);
+    _mav_put_uint8_t(buf, 18, gpsOffsetLon);
+    _mav_put_uint8_t(buf, 19, rfSelect);
+    _mav_put_char_array(buf, 6, callsign, 9);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN);
+#else
+    mavlink_uavionix_adsb_out_cfg_t packet;
+    packet.ICAO = ICAO;
+    packet.stallSpeed = stallSpeed;
+    packet.emitterType = emitterType;
+    packet.aircraftSize = aircraftSize;
+    packet.gpsOffsetLat = gpsOffsetLat;
+    packet.gpsOffsetLon = gpsOffsetLon;
+    packet.rfSelect = rfSelect;
+    mav_array_memcpy(packet.callsign, callsign, sizeof(char)*9);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG;
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN);
+#endif
 }
 
 /**
@@ -143,7 +195,7 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack_chan(uint8_t syste
     packet.gpsOffsetLat = gpsOffsetLat;
     packet.gpsOffsetLon = gpsOffsetLon;
     packet.rfSelect = rfSelect;
-    mav_array_memcpy(packet.callsign, callsign, sizeof(char)*9);
+    mav_array_assign_char(packet.callsign, callsign, 9);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN);
 #endif
 
@@ -176,6 +228,20 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_encode(uint8_t system_i
 static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_uavionix_adsb_out_cfg_t* uavionix_adsb_out_cfg)
 {
     return mavlink_msg_uavionix_adsb_out_cfg_pack_chan(system_id, component_id, chan, msg, uavionix_adsb_out_cfg->ICAO, uavionix_adsb_out_cfg->callsign, uavionix_adsb_out_cfg->emitterType, uavionix_adsb_out_cfg->aircraftSize, uavionix_adsb_out_cfg->gpsOffsetLat, uavionix_adsb_out_cfg->gpsOffsetLon, uavionix_adsb_out_cfg->stallSpeed, uavionix_adsb_out_cfg->rfSelect);
+}
+
+/**
+ * @brief Encode a uavionix_adsb_out_cfg struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param uavionix_adsb_out_cfg C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_uavionix_adsb_out_cfg_t* uavionix_adsb_out_cfg)
+{
+    return mavlink_msg_uavionix_adsb_out_cfg_pack_status(system_id, component_id, _status, msg,  uavionix_adsb_out_cfg->ICAO, uavionix_adsb_out_cfg->callsign, uavionix_adsb_out_cfg->emitterType, uavionix_adsb_out_cfg->aircraftSize, uavionix_adsb_out_cfg->gpsOffsetLat, uavionix_adsb_out_cfg->gpsOffsetLon, uavionix_adsb_out_cfg->stallSpeed, uavionix_adsb_out_cfg->rfSelect);
 }
 
 /**
@@ -215,7 +281,7 @@ static inline void mavlink_msg_uavionix_adsb_out_cfg_send(mavlink_channel_t chan
     packet.gpsOffsetLat = gpsOffsetLat;
     packet.gpsOffsetLon = gpsOffsetLon;
     packet.rfSelect = rfSelect;
-    mav_array_memcpy(packet.callsign, callsign, sizeof(char)*9);
+    mav_array_assign_char(packet.callsign, callsign, 9);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG, (const char *)&packet, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_CRC);
 #endif
 }
@@ -236,7 +302,7 @@ static inline void mavlink_msg_uavionix_adsb_out_cfg_send_struct(mavlink_channel
 
 #if MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -264,7 +330,7 @@ static inline void mavlink_msg_uavionix_adsb_out_cfg_send_buf(mavlink_message_t 
     packet->gpsOffsetLat = gpsOffsetLat;
     packet->gpsOffsetLon = gpsOffsetLon;
     packet->rfSelect = rfSelect;
-    mav_array_memcpy(packet->callsign, callsign, sizeof(char)*9);
+    mav_array_assign_char(packet->callsign, callsign, 9);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG, (const char *)packet, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN, MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_CRC);
 #endif
 }

@@ -85,6 +85,50 @@ static inline uint16_t mavlink_msg_radio_calibration_pack(uint8_t system_id, uin
 #else
     mavlink_radio_calibration_t packet;
 
+    mav_array_assign_uint16_t(packet.aileron, aileron, 3);
+    mav_array_assign_uint16_t(packet.elevator, elevator, 3);
+    mav_array_assign_uint16_t(packet.rudder, rudder, 3);
+    mav_array_assign_uint16_t(packet.gyro, gyro, 2);
+    mav_array_assign_uint16_t(packet.pitch, pitch, 5);
+    mav_array_assign_uint16_t(packet.throttle, throttle, 5);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_RADIO_CALIBRATION;
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_CRC);
+}
+
+/**
+ * @brief Pack a radio_calibration message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param aileron  Aileron setpoints: left, center, right
+ * @param elevator  Elevator setpoints: nose down, center, nose up
+ * @param rudder  Rudder setpoints: nose left, center, nose right
+ * @param gyro  Tail gyro mode/gain setpoints: heading hold, rate mode
+ * @param pitch  Pitch curve setpoints (every 25%)
+ * @param throttle  Throttle curve setpoints (every 25%)
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_radio_calibration_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               const uint16_t *aileron, const uint16_t *elevator, const uint16_t *rudder, const uint16_t *gyro, const uint16_t *pitch, const uint16_t *throttle)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN];
+
+    _mav_put_uint16_t_array(buf, 0, aileron, 3);
+    _mav_put_uint16_t_array(buf, 6, elevator, 3);
+    _mav_put_uint16_t_array(buf, 12, rudder, 3);
+    _mav_put_uint16_t_array(buf, 18, gyro, 2);
+    _mav_put_uint16_t_array(buf, 22, pitch, 5);
+    _mav_put_uint16_t_array(buf, 32, throttle, 5);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN);
+#else
+    mavlink_radio_calibration_t packet;
+
     mav_array_memcpy(packet.aileron, aileron, sizeof(uint16_t)*3);
     mav_array_memcpy(packet.elevator, elevator, sizeof(uint16_t)*3);
     mav_array_memcpy(packet.rudder, rudder, sizeof(uint16_t)*3);
@@ -95,7 +139,11 @@ static inline uint16_t mavlink_msg_radio_calibration_pack(uint8_t system_id, uin
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_RADIO_CALIBRATION;
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_CRC);
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN);
+#endif
 }
 
 /**
@@ -129,12 +177,12 @@ static inline uint16_t mavlink_msg_radio_calibration_pack_chan(uint8_t system_id
 #else
     mavlink_radio_calibration_t packet;
 
-    mav_array_memcpy(packet.aileron, aileron, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.elevator, elevator, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.rudder, rudder, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.gyro, gyro, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet.pitch, pitch, sizeof(uint16_t)*5);
-    mav_array_memcpy(packet.throttle, throttle, sizeof(uint16_t)*5);
+    mav_array_assign_uint16_t(packet.aileron, aileron, 3);
+    mav_array_assign_uint16_t(packet.elevator, elevator, 3);
+    mav_array_assign_uint16_t(packet.rudder, rudder, 3);
+    mav_array_assign_uint16_t(packet.gyro, gyro, 2);
+    mav_array_assign_uint16_t(packet.pitch, pitch, 5);
+    mav_array_assign_uint16_t(packet.throttle, throttle, 5);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN);
 #endif
 
@@ -170,6 +218,20 @@ static inline uint16_t mavlink_msg_radio_calibration_encode_chan(uint8_t system_
 }
 
 /**
+ * @brief Encode a radio_calibration struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param radio_calibration C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_radio_calibration_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_radio_calibration_t* radio_calibration)
+{
+    return mavlink_msg_radio_calibration_pack_status(system_id, component_id, _status, msg,  radio_calibration->aileron, radio_calibration->elevator, radio_calibration->rudder, radio_calibration->gyro, radio_calibration->pitch, radio_calibration->throttle);
+}
+
+/**
  * @brief Send a radio_calibration message
  * @param chan MAVLink channel to send the message
  *
@@ -197,12 +259,12 @@ static inline void mavlink_msg_radio_calibration_send(mavlink_channel_t chan, co
 #else
     mavlink_radio_calibration_t packet;
 
-    mav_array_memcpy(packet.aileron, aileron, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.elevator, elevator, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.rudder, rudder, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet.gyro, gyro, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet.pitch, pitch, sizeof(uint16_t)*5);
-    mav_array_memcpy(packet.throttle, throttle, sizeof(uint16_t)*5);
+    mav_array_assign_uint16_t(packet.aileron, aileron, 3);
+    mav_array_assign_uint16_t(packet.elevator, elevator, 3);
+    mav_array_assign_uint16_t(packet.rudder, rudder, 3);
+    mav_array_assign_uint16_t(packet.gyro, gyro, 2);
+    mav_array_assign_uint16_t(packet.pitch, pitch, 5);
+    mav_array_assign_uint16_t(packet.throttle, throttle, 5);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_RADIO_CALIBRATION, (const char *)&packet, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_CRC);
 #endif
 }
@@ -223,7 +285,7 @@ static inline void mavlink_msg_radio_calibration_send_struct(mavlink_channel_t c
 
 #if MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -244,12 +306,12 @@ static inline void mavlink_msg_radio_calibration_send_buf(mavlink_message_t *msg
 #else
     mavlink_radio_calibration_t *packet = (mavlink_radio_calibration_t *)msgbuf;
 
-    mav_array_memcpy(packet->aileron, aileron, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet->elevator, elevator, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet->rudder, rudder, sizeof(uint16_t)*3);
-    mav_array_memcpy(packet->gyro, gyro, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet->pitch, pitch, sizeof(uint16_t)*5);
-    mav_array_memcpy(packet->throttle, throttle, sizeof(uint16_t)*5);
+    mav_array_assign_uint16_t(packet->aileron, aileron, 3);
+    mav_array_assign_uint16_t(packet->elevator, elevator, 3);
+    mav_array_assign_uint16_t(packet->rudder, rudder, 3);
+    mav_array_assign_uint16_t(packet->gyro, gyro, 2);
+    mav_array_assign_uint16_t(packet->pitch, pitch, 5);
+    mav_array_assign_uint16_t(packet->throttle, throttle, 5);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_RADIO_CALIBRATION, (const char *)packet, MAVLINK_MSG_ID_RADIO_CALIBRATION_MIN_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_LEN, MAVLINK_MSG_ID_RADIO_CALIBRATION_CRC);
 #endif
 }

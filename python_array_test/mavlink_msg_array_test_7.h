@@ -103,6 +103,59 @@ static inline uint16_t mavlink_msg_array_test_7_pack(uint8_t system_id, uint8_t 
 #else
     mavlink_array_test_7_t packet;
 
+    mav_array_assign_double(packet.ar_d, ar_d, 2);
+    mav_array_assign_float(packet.ar_f, ar_f, 2);
+    mav_array_assign_uint32_t(packet.ar_u32, ar_u32, 2);
+    mav_array_assign_int32_t(packet.ar_i32, ar_i32, 2);
+    mav_array_assign_uint16_t(packet.ar_u16, ar_u16, 2);
+    mav_array_assign_int16_t(packet.ar_i16, ar_i16, 2);
+    mav_array_assign_uint8_t(packet.ar_u8, ar_u8, 2);
+    mav_array_assign_int8_t(packet.ar_i8, ar_i8, 2);
+    mav_array_assign_char(packet.ar_c, ar_c, 32);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_ARRAY_TEST_7;
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_CRC);
+}
+
+/**
+ * @brief Pack a array_test_7 message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param ar_d  Value array
+ * @param ar_f  Value array
+ * @param ar_u32  Value array
+ * @param ar_i32  Value array
+ * @param ar_u16  Value array
+ * @param ar_i16  Value array
+ * @param ar_u8  Value array
+ * @param ar_i8  Value array
+ * @param ar_c  Value array
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_array_test_7_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               const double *ar_d, const float *ar_f, const uint32_t *ar_u32, const int32_t *ar_i32, const uint16_t *ar_u16, const int16_t *ar_i16, const uint8_t *ar_u8, const int8_t *ar_i8, const char *ar_c)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_ARRAY_TEST_7_LEN];
+
+    _mav_put_double_array(buf, 0, ar_d, 2);
+    _mav_put_float_array(buf, 16, ar_f, 2);
+    _mav_put_uint32_t_array(buf, 24, ar_u32, 2);
+    _mav_put_int32_t_array(buf, 32, ar_i32, 2);
+    _mav_put_uint16_t_array(buf, 40, ar_u16, 2);
+    _mav_put_int16_t_array(buf, 44, ar_i16, 2);
+    _mav_put_uint8_t_array(buf, 48, ar_u8, 2);
+    _mav_put_int8_t_array(buf, 50, ar_i8, 2);
+    _mav_put_char_array(buf, 52, ar_c, 32);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN);
+#else
+    mavlink_array_test_7_t packet;
+
     mav_array_memcpy(packet.ar_d, ar_d, sizeof(double)*2);
     mav_array_memcpy(packet.ar_f, ar_f, sizeof(float)*2);
     mav_array_memcpy(packet.ar_u32, ar_u32, sizeof(uint32_t)*2);
@@ -116,7 +169,11 @@ static inline uint16_t mavlink_msg_array_test_7_pack(uint8_t system_id, uint8_t 
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_ARRAY_TEST_7;
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_CRC);
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN);
+#endif
 }
 
 /**
@@ -156,15 +213,15 @@ static inline uint16_t mavlink_msg_array_test_7_pack_chan(uint8_t system_id, uin
 #else
     mavlink_array_test_7_t packet;
 
-    mav_array_memcpy(packet.ar_d, ar_d, sizeof(double)*2);
-    mav_array_memcpy(packet.ar_f, ar_f, sizeof(float)*2);
-    mav_array_memcpy(packet.ar_u32, ar_u32, sizeof(uint32_t)*2);
-    mav_array_memcpy(packet.ar_i32, ar_i32, sizeof(int32_t)*2);
-    mav_array_memcpy(packet.ar_u16, ar_u16, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet.ar_i16, ar_i16, sizeof(int16_t)*2);
-    mav_array_memcpy(packet.ar_u8, ar_u8, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet.ar_i8, ar_i8, sizeof(int8_t)*2);
-    mav_array_memcpy(packet.ar_c, ar_c, sizeof(char)*32);
+    mav_array_assign_double(packet.ar_d, ar_d, 2);
+    mav_array_assign_float(packet.ar_f, ar_f, 2);
+    mav_array_assign_uint32_t(packet.ar_u32, ar_u32, 2);
+    mav_array_assign_int32_t(packet.ar_i32, ar_i32, 2);
+    mav_array_assign_uint16_t(packet.ar_u16, ar_u16, 2);
+    mav_array_assign_int16_t(packet.ar_i16, ar_i16, 2);
+    mav_array_assign_uint8_t(packet.ar_u8, ar_u8, 2);
+    mav_array_assign_int8_t(packet.ar_i8, ar_i8, 2);
+    mav_array_assign_char(packet.ar_c, ar_c, 32);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN);
 #endif
 
@@ -197,6 +254,20 @@ static inline uint16_t mavlink_msg_array_test_7_encode(uint8_t system_id, uint8_
 static inline uint16_t mavlink_msg_array_test_7_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_array_test_7_t* array_test_7)
 {
     return mavlink_msg_array_test_7_pack_chan(system_id, component_id, chan, msg, array_test_7->ar_d, array_test_7->ar_f, array_test_7->ar_u32, array_test_7->ar_i32, array_test_7->ar_u16, array_test_7->ar_i16, array_test_7->ar_u8, array_test_7->ar_i8, array_test_7->ar_c);
+}
+
+/**
+ * @brief Encode a array_test_7 struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param array_test_7 C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_array_test_7_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_array_test_7_t* array_test_7)
+{
+    return mavlink_msg_array_test_7_pack_status(system_id, component_id, _status, msg,  array_test_7->ar_d, array_test_7->ar_f, array_test_7->ar_u32, array_test_7->ar_i32, array_test_7->ar_u16, array_test_7->ar_i16, array_test_7->ar_u8, array_test_7->ar_i8, array_test_7->ar_c);
 }
 
 /**
@@ -233,15 +304,15 @@ static inline void mavlink_msg_array_test_7_send(mavlink_channel_t chan, const d
 #else
     mavlink_array_test_7_t packet;
 
-    mav_array_memcpy(packet.ar_d, ar_d, sizeof(double)*2);
-    mav_array_memcpy(packet.ar_f, ar_f, sizeof(float)*2);
-    mav_array_memcpy(packet.ar_u32, ar_u32, sizeof(uint32_t)*2);
-    mav_array_memcpy(packet.ar_i32, ar_i32, sizeof(int32_t)*2);
-    mav_array_memcpy(packet.ar_u16, ar_u16, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet.ar_i16, ar_i16, sizeof(int16_t)*2);
-    mav_array_memcpy(packet.ar_u8, ar_u8, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet.ar_i8, ar_i8, sizeof(int8_t)*2);
-    mav_array_memcpy(packet.ar_c, ar_c, sizeof(char)*32);
+    mav_array_assign_double(packet.ar_d, ar_d, 2);
+    mav_array_assign_float(packet.ar_f, ar_f, 2);
+    mav_array_assign_uint32_t(packet.ar_u32, ar_u32, 2);
+    mav_array_assign_int32_t(packet.ar_i32, ar_i32, 2);
+    mav_array_assign_uint16_t(packet.ar_u16, ar_u16, 2);
+    mav_array_assign_int16_t(packet.ar_i16, ar_i16, 2);
+    mav_array_assign_uint8_t(packet.ar_u8, ar_u8, 2);
+    mav_array_assign_int8_t(packet.ar_i8, ar_i8, 2);
+    mav_array_assign_char(packet.ar_c, ar_c, 32);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ARRAY_TEST_7, (const char *)&packet, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_CRC);
 #endif
 }
@@ -262,7 +333,7 @@ static inline void mavlink_msg_array_test_7_send_struct(mavlink_channel_t chan, 
 
 #if MAVLINK_MSG_ID_ARRAY_TEST_7_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -286,15 +357,15 @@ static inline void mavlink_msg_array_test_7_send_buf(mavlink_message_t *msgbuf, 
 #else
     mavlink_array_test_7_t *packet = (mavlink_array_test_7_t *)msgbuf;
 
-    mav_array_memcpy(packet->ar_d, ar_d, sizeof(double)*2);
-    mav_array_memcpy(packet->ar_f, ar_f, sizeof(float)*2);
-    mav_array_memcpy(packet->ar_u32, ar_u32, sizeof(uint32_t)*2);
-    mav_array_memcpy(packet->ar_i32, ar_i32, sizeof(int32_t)*2);
-    mav_array_memcpy(packet->ar_u16, ar_u16, sizeof(uint16_t)*2);
-    mav_array_memcpy(packet->ar_i16, ar_i16, sizeof(int16_t)*2);
-    mav_array_memcpy(packet->ar_u8, ar_u8, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet->ar_i8, ar_i8, sizeof(int8_t)*2);
-    mav_array_memcpy(packet->ar_c, ar_c, sizeof(char)*32);
+    mav_array_assign_double(packet->ar_d, ar_d, 2);
+    mav_array_assign_float(packet->ar_f, ar_f, 2);
+    mav_array_assign_uint32_t(packet->ar_u32, ar_u32, 2);
+    mav_array_assign_int32_t(packet->ar_i32, ar_i32, 2);
+    mav_array_assign_uint16_t(packet->ar_u16, ar_u16, 2);
+    mav_array_assign_int16_t(packet->ar_i16, ar_i16, 2);
+    mav_array_assign_uint8_t(packet->ar_u8, ar_u8, 2);
+    mav_array_assign_int8_t(packet->ar_i8, ar_i8, 2);
+    mav_array_assign_char(packet->ar_c, ar_c, 32);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ARRAY_TEST_7, (const char *)packet, MAVLINK_MSG_ID_ARRAY_TEST_7_MIN_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_LEN, MAVLINK_MSG_ID_ARRAY_TEST_7_CRC);
 #endif
 }

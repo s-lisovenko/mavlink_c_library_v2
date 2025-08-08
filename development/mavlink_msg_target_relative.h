@@ -113,6 +113,63 @@ static inline uint16_t mavlink_msg_target_relative_pack(uint8_t system_id, uint8
     packet.id = id;
     packet.frame = frame;
     packet.type = type;
+    mav_array_assign_float(packet.pos_std, pos_std, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.q_sensor, q_sensor, 4);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_TARGET_RELATIVE;
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_CRC);
+}
+
+/**
+ * @brief Pack a target_relative message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param timestamp [us] Timestamp (UNIX epoch time)
+ * @param id  The ID of the target if multiple targets are present
+ * @param frame  Coordinate frame used for following fields.
+ * @param x [m] X Position of the target in TARGET_OBS_FRAME
+ * @param y [m] Y Position of the target in TARGET_OBS_FRAME
+ * @param z [m] Z Position of the target in TARGET_OBS_FRAME
+ * @param pos_std [m] Standard deviation of the target's position in TARGET_OBS_FRAME
+ * @param yaw_std [rad] Standard deviation of the target's orientation in TARGET_OBS_FRAME
+ * @param q_target  Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @param q_sensor  Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Ignored if set to (0,0,0,0)) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @param type  Type of target
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_target_relative_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               uint64_t timestamp, uint8_t id, uint8_t frame, float x, float y, float z, const float *pos_std, float yaw_std, const float *q_target, const float *q_sensor, uint8_t type)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_TARGET_RELATIVE_LEN];
+    _mav_put_uint64_t(buf, 0, timestamp);
+    _mav_put_float(buf, 8, x);
+    _mav_put_float(buf, 12, y);
+    _mav_put_float(buf, 16, z);
+    _mav_put_float(buf, 32, yaw_std);
+    _mav_put_uint8_t(buf, 68, id);
+    _mav_put_uint8_t(buf, 69, frame);
+    _mav_put_uint8_t(buf, 70, type);
+    _mav_put_float_array(buf, 20, pos_std, 3);
+    _mav_put_float_array(buf, 36, q_target, 4);
+    _mav_put_float_array(buf, 52, q_sensor, 4);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN);
+#else
+    mavlink_target_relative_t packet;
+    packet.timestamp = timestamp;
+    packet.x = x;
+    packet.y = y;
+    packet.z = z;
+    packet.yaw_std = yaw_std;
+    packet.id = id;
+    packet.frame = frame;
+    packet.type = type;
     mav_array_memcpy(packet.pos_std, pos_std, sizeof(float)*3);
     mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
     mav_array_memcpy(packet.q_sensor, q_sensor, sizeof(float)*4);
@@ -120,7 +177,11 @@ static inline uint16_t mavlink_msg_target_relative_pack(uint8_t system_id, uint8
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_TARGET_RELATIVE;
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_CRC);
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN);
+#endif
 }
 
 /**
@@ -170,9 +231,9 @@ static inline uint16_t mavlink_msg_target_relative_pack_chan(uint8_t system_id, 
     packet.id = id;
     packet.frame = frame;
     packet.type = type;
-    mav_array_memcpy(packet.pos_std, pos_std, sizeof(float)*3);
-    mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet.q_sensor, q_sensor, sizeof(float)*4);
+    mav_array_assign_float(packet.pos_std, pos_std, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.q_sensor, q_sensor, 4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN);
 #endif
 
@@ -205,6 +266,20 @@ static inline uint16_t mavlink_msg_target_relative_encode(uint8_t system_id, uin
 static inline uint16_t mavlink_msg_target_relative_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_target_relative_t* target_relative)
 {
     return mavlink_msg_target_relative_pack_chan(system_id, component_id, chan, msg, target_relative->timestamp, target_relative->id, target_relative->frame, target_relative->x, target_relative->y, target_relative->z, target_relative->pos_std, target_relative->yaw_std, target_relative->q_target, target_relative->q_sensor, target_relative->type);
+}
+
+/**
+ * @brief Encode a target_relative struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param target_relative C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_target_relative_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_target_relative_t* target_relative)
+{
+    return mavlink_msg_target_relative_pack_status(system_id, component_id, _status, msg,  target_relative->timestamp, target_relative->id, target_relative->frame, target_relative->x, target_relative->y, target_relative->z, target_relative->pos_std, target_relative->yaw_std, target_relative->q_target, target_relative->q_sensor, target_relative->type);
 }
 
 /**
@@ -251,9 +326,9 @@ static inline void mavlink_msg_target_relative_send(mavlink_channel_t chan, uint
     packet.id = id;
     packet.frame = frame;
     packet.type = type;
-    mav_array_memcpy(packet.pos_std, pos_std, sizeof(float)*3);
-    mav_array_memcpy(packet.q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet.q_sensor, q_sensor, sizeof(float)*4);
+    mav_array_assign_float(packet.pos_std, pos_std, 3);
+    mav_array_assign_float(packet.q_target, q_target, 4);
+    mav_array_assign_float(packet.q_sensor, q_sensor, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TARGET_RELATIVE, (const char *)&packet, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_CRC);
 #endif
 }
@@ -274,7 +349,7 @@ static inline void mavlink_msg_target_relative_send_struct(mavlink_channel_t cha
 
 #if MAVLINK_MSG_ID_TARGET_RELATIVE_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -306,9 +381,9 @@ static inline void mavlink_msg_target_relative_send_buf(mavlink_message_t *msgbu
     packet->id = id;
     packet->frame = frame;
     packet->type = type;
-    mav_array_memcpy(packet->pos_std, pos_std, sizeof(float)*3);
-    mav_array_memcpy(packet->q_target, q_target, sizeof(float)*4);
-    mav_array_memcpy(packet->q_sensor, q_sensor, sizeof(float)*4);
+    mav_array_assign_float(packet->pos_std, pos_std, 3);
+    mav_array_assign_float(packet->q_target, q_target, 4);
+    mav_array_assign_float(packet->q_sensor, q_sensor, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_TARGET_RELATIVE, (const char *)packet, MAVLINK_MSG_ID_TARGET_RELATIVE_MIN_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_LEN, MAVLINK_MSG_ID_TARGET_RELATIVE_CRC);
 #endif
 }

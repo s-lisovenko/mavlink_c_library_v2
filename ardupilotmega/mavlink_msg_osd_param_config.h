@@ -107,12 +107,70 @@ static inline uint16_t mavlink_msg_osd_param_config_pack(uint8_t system_id, uint
     packet.osd_screen = osd_screen;
     packet.osd_index = osd_index;
     packet.config_type = config_type;
-    mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+    mav_array_assign_char(packet.param_id, param_id, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN);
 #endif
 
     msg->msgid = MAVLINK_MSG_ID_OSD_PARAM_CONFIG;
     return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_MIN_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_CRC);
+}
+
+/**
+ * @brief Pack a osd_param_config message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param osd_screen  OSD parameter screen index.
+ * @param osd_index  OSD parameter display index.
+ * @param param_id  Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string
+ * @param config_type  Config type.
+ * @param min_value  OSD parameter minimum value.
+ * @param max_value  OSD parameter maximum value.
+ * @param increment  OSD parameter increment.
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_osd_param_config_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t osd_screen, uint8_t osd_index, const char *param_id, uint8_t config_type, float min_value, float max_value, float increment)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN];
+    _mav_put_uint32_t(buf, 0, request_id);
+    _mav_put_float(buf, 4, min_value);
+    _mav_put_float(buf, 8, max_value);
+    _mav_put_float(buf, 12, increment);
+    _mav_put_uint8_t(buf, 16, target_system);
+    _mav_put_uint8_t(buf, 17, target_component);
+    _mav_put_uint8_t(buf, 18, osd_screen);
+    _mav_put_uint8_t(buf, 19, osd_index);
+    _mav_put_uint8_t(buf, 36, config_type);
+    _mav_put_char_array(buf, 20, param_id, 16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN);
+#else
+    mavlink_osd_param_config_t packet;
+    packet.request_id = request_id;
+    packet.min_value = min_value;
+    packet.max_value = max_value;
+    packet.increment = increment;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
+    packet.osd_screen = osd_screen;
+    packet.osd_index = osd_index;
+    packet.config_type = config_type;
+    mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_OSD_PARAM_CONFIG;
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_MIN_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_MIN_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN);
+#endif
 }
 
 /**
@@ -161,7 +219,7 @@ static inline uint16_t mavlink_msg_osd_param_config_pack_chan(uint8_t system_id,
     packet.osd_screen = osd_screen;
     packet.osd_index = osd_index;
     packet.config_type = config_type;
-    mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+    mav_array_assign_char(packet.param_id, param_id, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN);
 #endif
 
@@ -194,6 +252,20 @@ static inline uint16_t mavlink_msg_osd_param_config_encode(uint8_t system_id, ui
 static inline uint16_t mavlink_msg_osd_param_config_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_osd_param_config_t* osd_param_config)
 {
     return mavlink_msg_osd_param_config_pack_chan(system_id, component_id, chan, msg, osd_param_config->target_system, osd_param_config->target_component, osd_param_config->request_id, osd_param_config->osd_screen, osd_param_config->osd_index, osd_param_config->param_id, osd_param_config->config_type, osd_param_config->min_value, osd_param_config->max_value, osd_param_config->increment);
+}
+
+/**
+ * @brief Encode a osd_param_config struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param osd_param_config C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_osd_param_config_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_osd_param_config_t* osd_param_config)
+{
+    return mavlink_msg_osd_param_config_pack_status(system_id, component_id, _status, msg,  osd_param_config->target_system, osd_param_config->target_component, osd_param_config->request_id, osd_param_config->osd_screen, osd_param_config->osd_index, osd_param_config->param_id, osd_param_config->config_type, osd_param_config->min_value, osd_param_config->max_value, osd_param_config->increment);
 }
 
 /**
@@ -239,7 +311,7 @@ static inline void mavlink_msg_osd_param_config_send(mavlink_channel_t chan, uin
     packet.osd_screen = osd_screen;
     packet.osd_index = osd_index;
     packet.config_type = config_type;
-    mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+    mav_array_assign_char(packet.param_id, param_id, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OSD_PARAM_CONFIG, (const char *)&packet, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_MIN_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_CRC);
 #endif
 }
@@ -260,7 +332,7 @@ static inline void mavlink_msg_osd_param_config_send_struct(mavlink_channel_t ch
 
 #if MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -292,7 +364,7 @@ static inline void mavlink_msg_osd_param_config_send_buf(mavlink_message_t *msgb
     packet->osd_screen = osd_screen;
     packet->osd_index = osd_index;
     packet->config_type = config_type;
-    mav_array_memcpy(packet->param_id, param_id, sizeof(char)*16);
+    mav_array_assign_char(packet->param_id, param_id, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OSD_PARAM_CONFIG, (const char *)packet, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_MIN_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_LEN, MAVLINK_MSG_ID_OSD_PARAM_CONFIG_CRC);
 #endif
 }

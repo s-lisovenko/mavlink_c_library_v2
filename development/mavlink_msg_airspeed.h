@@ -88,6 +88,51 @@ static inline uint16_t mavlink_msg_airspeed_pack(uint8_t system_id, uint8_t comp
 }
 
 /**
+ * @brief Pack a airspeed message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ *
+ * @param id  Sensor ID.
+ * @param airspeed [m/s] Calibrated airspeed (CAS).
+ * @param temperature [cdegC] Temperature. INT16_MAX for value unknown/not supplied.
+ * @param raw_press [hPa] Raw differential pressure. NaN for value unknown/not supplied.
+ * @param flags  Airspeed sensor flags.
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
+static inline uint16_t mavlink_msg_airspeed_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
+                               uint8_t id, float airspeed, int16_t temperature, float raw_press, uint8_t flags)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char buf[MAVLINK_MSG_ID_AIRSPEED_LEN];
+    _mav_put_float(buf, 0, airspeed);
+    _mav_put_float(buf, 4, raw_press);
+    _mav_put_int16_t(buf, 8, temperature);
+    _mav_put_uint8_t(buf, 10, id);
+    _mav_put_uint8_t(buf, 11, flags);
+
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_AIRSPEED_LEN);
+#else
+    mavlink_airspeed_t packet;
+    packet.airspeed = airspeed;
+    packet.raw_press = raw_press;
+    packet.temperature = temperature;
+    packet.id = id;
+    packet.flags = flags;
+
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_AIRSPEED_LEN);
+#endif
+
+    msg->msgid = MAVLINK_MSG_ID_AIRSPEED;
+#if MAVLINK_CRC_EXTRA
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_AIRSPEED_MIN_LEN, MAVLINK_MSG_ID_AIRSPEED_LEN, MAVLINK_MSG_ID_AIRSPEED_CRC);
+#else
+    return mavlink_finalize_message_buffer(msg, system_id, component_id, _status, MAVLINK_MSG_ID_AIRSPEED_MIN_LEN, MAVLINK_MSG_ID_AIRSPEED_LEN);
+#endif
+}
+
+/**
  * @brief Pack a airspeed message on a channel
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
@@ -156,6 +201,20 @@ static inline uint16_t mavlink_msg_airspeed_encode_chan(uint8_t system_id, uint8
 }
 
 /**
+ * @brief Encode a airspeed struct with provided status structure
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param status MAVLink status structure
+ * @param msg The MAVLink message to compress the data into
+ * @param airspeed C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_airspeed_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_airspeed_t* airspeed)
+{
+    return mavlink_msg_airspeed_pack_status(system_id, component_id, _status, msg,  airspeed->id, airspeed->airspeed, airspeed->temperature, airspeed->raw_press, airspeed->flags);
+}
+
+/**
  * @brief Send a airspeed message
  * @param chan MAVLink channel to send the message
  *
@@ -206,7 +265,7 @@ static inline void mavlink_msg_airspeed_send_struct(mavlink_channel_t chan, cons
 
 #if MAVLINK_MSG_ID_AIRSPEED_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
